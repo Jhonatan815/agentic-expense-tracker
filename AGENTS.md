@@ -32,3 +32,4 @@ Ejecuta y asegúrate de que pasan sin errores:
 - `pnpm run typecheck`
 - `pnpm run lint`
 - `pnpm test`
+  g
