@@ -8,6 +8,16 @@
 
 **Input**: User description: `Crea la especificación funcional para la feature "expenses" (gestor de gastos personales). Requisitos funcionales: 1. Listado de gastos: mostrar cada gasto con título/concepto, importe en euros (€), categoría (Alimentación, Transporte, Ocio, Hogar, Otros) y fecha. 2. Añadir gasto: formulario para registrar un nuevo gasto validando que el concepto no esté vacío y el importe sea un número positivo mayor que 0. 3. Eliminar gasto: permitir borrar un gasto existente de la lista. 4. Filtrado por categoría: permitir filtrar el listado por "Todas" o por una categoría concreta. 5. Resumen financiero: mostrar el importe total acumulado de los gastos visibles según el filtro activo y el número de movimientos. 6. Persistencia simulada asíncrona: los datos deben gestionarse mediante un servicio asíncrono simulado con latencia realista (usando localStorage por debajo para mantener datos entre recargas) con estados visibles de carga y error.`
 
+## Clarifications
+
+### Session 2026-11-21
+
+- Q: ¿Cómo debe producir fallos el servicio asíncrono simulado para que los mensajes de error y los reintentos puedan validarse de forma consistente? → A: Los fallos se inyectan únicamente en las pruebas, simulando un rechazo del servicio; la aplicación real no falla de forma aleatoria.
+- Q: ¿Qué debe hacer la aplicación cuando el almacenamiento del navegador no está disponible o contiene datos ilegibles? → A: Mostrar una advertencia visible y seguir funcionando en memoria durante la sesión actual.
+- Q: ¿En qué formato exacto debe mostrarse la fecha de registro de cada gasto en el listado? → A: DD/MM/YYYY (p. ej., 21/11/2026).
+- Q: ¿Debe recordarse el filtro de categoría activo después de recargar la página o debe reiniciarse a «Todas»? → A: Se reinicia a «Todas» en cada recarga.
+- Q: ¿Qué estándar mínimo de accesibilidad deben cumplir el formulario y el listado de gastos? → A: Criterios básicos de WCAG 2.1 AA: etiquetas, operación por teclado, foco visible y anuncio de errores.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Registrar un gasto y verlo en el listado (Priority: P1)
@@ -134,13 +144,19 @@ desaparece del listado y que el resumen deja de contarlo.
   sigue disponible con todos sus datos.
 - Se elimina el último gasto existente: el listado queda vacío y el resumen
   vuelve a 0 € y 0 movimientos.
+- Los fallos de operación se provocan de forma determinista en las pruebas;
+  la aplicación en uso normal no genera fallos aleatorios.
+- El almacenamiento del navegador no está disponible o contiene datos
+  ilegibles: se muestra una advertencia visible y la aplicación sigue
+  funcionando en memoria durante la sesión actual.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: El sistema MUST mostrar cada gasto registrado con su concepto,
-  importe expresado en euros (€), categoría y fecha.
+  importe expresado en euros (€), categoría y fecha en formato DD/MM/YYYY
+  (p. ej., 21/11/2026).
 - **FR-002**: El sistema MUST presentar el listado ordenado por fecha, de más
   reciente a más antiguo.
 - **FR-003**: El sistema MUST ofrecer un formulario para registrar un gasto
@@ -165,7 +181,8 @@ desaparece del listado y que el resumen deja de contarlo.
 - **FR-012**: Tras una eliminación correcta, el sistema MUST retirar el gasto
   del listado y recalcular el resumen.
 - **FR-013**: El sistema MUST ofrecer un control de filtrado con la opción
-  «Todas» y una opción para cada una de las cinco categorías.
+  «Todas» y una opción para cada una de las cinco categorías. El filtro
+  MUST reiniciarse a «Todas» después de recargar la vista.
 - **FR-014**: El sistema MUST limitar el listado a los gastos de la categoría
   seleccionada y MUST mostrar todos los gastos cuando el filtro sea «Todas».
 - **FR-015**: El sistema MUST calcular el resumen únicamente sobre los gastos
@@ -216,6 +233,9 @@ desaparece del listado y que el resumen deja de contarlo.
 - **SC-007**: Al menos el 90 % de las personas que usan la vista por primera vez
   completan sin ayuda las cinco tareas principales (registrar, consultar,
   filtrar, eliminar e interpretar el resumen) en menos de 5 minutos.
+- **SC-008**: El 100 % de los controles interactivos del formulario y del
+  listado son operables con teclado, tienen etiqueta accesible y exponen los
+  mensajes de error, conforme a los criterios básicos de WCAG 2.1 AA.
 
 ## Assumptions
 
