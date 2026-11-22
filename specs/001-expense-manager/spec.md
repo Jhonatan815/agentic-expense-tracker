@@ -17,6 +17,7 @@
 - Q: ¿En qué formato exacto debe mostrarse la fecha de registro de cada gasto en el listado? → A: DD/MM/YYYY (p. ej., 21/11/2026).
 - Q: ¿Debe recordarse el filtro de categoría activo después de recargar la página o debe reiniciarse a «Todas»? → A: Se reinicia a «Todas» en cada recarga.
 - Q: ¿Qué estándar mínimo de accesibilidad deben cumplir el formulario y el listado de gastos? → A: Criterios básicos de WCAG 2.1 AA: etiquetas, operación por teclado, foco visible y anuncio de errores.
+- Q: ¿Es obligatoria una latencia de ~1 segundo como la mencionada en Assumptions? → A: No; se fija ~250 ms (R-001), suficiente para FR-018 y SC-005.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -244,8 +245,8 @@ desaparece del listado y que el resumen deja de contarlo.
 - Dependencia de entorno: el navegador debe permitir conservar datos
   localmente entre recargas; no se requieren servicios externos de terceros.
 - No existe un servicio remoto real: las operaciones se simulan con una latencia
-  breve y perceptible, de aproximadamente 1 segundo, para hacer visibles los
-  estados de carga y error.
+  breve y perceptible de ~250 ms (R-001), suficiente para hacer visibles los
+  estados de carga y error y para cumplir SC-005 (feedback en <1 s y alta en <3 s).
 - La fecha se asigna automáticamente al día del registro y no es editable en
   esta versión.
 - Los importes se expresan en euros, con hasta dos decimales y separador decimal

@@ -44,6 +44,7 @@ function isExpense(value: unknown): value is Expense {
     typeof candidate.amount === 'number' &&
     Number.isFinite(candidate.amount) &&
     candidate.amount > 0 &&
+    Math.round(candidate.amount * 100) === candidate.amount * 100 &&
     isExpenseCategory(candidate.category) &&
     typeof candidate.date === 'string'
   )

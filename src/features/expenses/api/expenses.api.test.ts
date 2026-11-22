@@ -144,4 +144,22 @@ describe('expenses.api', () => {
     expect(await settle(listExpenses())).toEqual([])
     expect(getExpenseStorageWarning()).toMatch(/almacenamiento/i)
   })
+
+  it('rechaza gastos persistidos con más de dos decimales', async () => {
+    localStorage.setItem(
+      'expenses.v1',
+      JSON.stringify([
+        {
+          id: '00000000-0000-4000-8000-000000000000',
+          concept: 'Café',
+          amount: 1.234,
+          category: 'Alimentación',
+          date: '2026-11-21T10:00:00.000Z',
+        },
+      ]),
+    )
+
+    expect(await settle(listExpenses())).toEqual([])
+    expect(getExpenseStorageWarning()).toMatch(/almacenamiento/i)
+  })
 })

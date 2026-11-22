@@ -144,6 +144,40 @@ describe('ExpensesDashboard', () => {
     expect(screen.getByText(/0 movimientos/)).toBeInTheDocument()
   })
 
+  it('deshabilita el botón de registro mientras la mutación está en curso', async () => {
+    const { user } = renderDashboard()
+    await waitForEmptyList()
+
+    await user.type(screen.getByLabelText('Concepto'), 'Café')
+    await user.type(screen.getByLabelText('Importe (€)'), '3.50')
+    await user.click(screen.getByRole('button', { name: /Añadir gasto/i }))
+
+    expect(screen.getByRole('button', { name: /Añadir gasto/i })).toBeDisabled()
+    expect(await screen.findByText('Café', {}, WAIT_FOR)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Añadir gasto/i })).toBeEnabled()
+  })
+
+  it('permite operar los controles con teclado y anuncia errores', async () => {
+    const { user } = renderDashboard()
+    await waitForEmptyList()
+
+    await user.tab()
+    expect(screen.getByLabelText('Concepto')).toHaveFocus()
+    await user.tab()
+    expect(screen.getByLabelText('Importe (€)')).toHaveFocus()
+    await user.tab()
+    expect(screen.getByLabelText('Categoría')).toHaveFocus()
+    await user.tab()
+    expect(screen.getByRole('button', { name: /Añadir gasto/i })).toHaveFocus()
+
+    await user.keyboard('{Enter}')
+    const error = await screen.findByText('El concepto no puede estar vacío.')
+    expect(error).toHaveAttribute('role', 'alert')
+
+    await user.tab()
+    expect(screen.getByLabelText('Filtrar por categoría')).toHaveFocus()
+  })
+
   // ---------------------------------------------------------------- US2
   it('filtra por categoría, restaura Todas y calcula el resumen sobre los visibles', async () => {
     const { user } = renderDashboard()
@@ -303,5 +337,19 @@ describe('ExpensesDashboard', () => {
     await user.click(screen.getByRole('button', { name: 'Reintentar eliminación' }))
     await waitForEmptyList()
     expect(screen.getByText(/Total:/)).toHaveTextContent('0,00')
+  })
+
+  it('deshabilita el botón de eliminación mientras la mutación está en curso', async () => {
+    const { user } = renderDashboard()
+    await waitForEmptyList()
+
+    await addExpense(user, 'Café', '3.50', 'Alimentación')
+    await screen.findByText('Café', {}, WAIT_FOR)
+    await user.click(screen.getByRole('button', { name: /Eliminar gasto: Café/i }))
+
+    expect(
+      screen.getByRole('button', { name: /Eliminar gasto: Café/i }),
+    ).toBeDisabled()
+    await waitForEmptyList()
   })
 })
