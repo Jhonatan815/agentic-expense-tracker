@@ -23,24 +23,43 @@ export default defineConfig([
       globals: globals.browser,
     },
     settings: {
+      'import/resolver': {
+        typescript: { project: './tsconfig.app.json' },
+      },
       'boundaries/elements': [
-        { type: 'app', pattern: 'src/app/**/*' },
-        { type: 'features', pattern: 'src/features/*/**/*' },
-        { type: 'common', pattern: 'src/common/**/*' },
+        { type: 'app', pattern: 'src/app' },
+        { type: 'features', pattern: 'src/features/*', capture: ['feature'] },
+        { type: 'common', pattern: 'src/common' },
       ],
     },
     rules: {
-      'boundaries/element-types': [
+      'boundaries/dependencies': [
         'error',
         {
           default: 'disallow',
-          rules: [
-            { from: 'app', allow: ['app', 'features', 'common'] },
+          policies: [
             {
-              from: 'features',
-              allow: ['common', ['features', { feature: '${from.feature}' }]],
+              from: { element: { type: 'app' } },
+              allow: { to: { element: { types: ['app', 'features', 'common'] } } },
             },
-            { from: 'common', allow: ['common'] },
+            {
+              from: { element: { type: 'features' } },
+              allow: {
+                to: [
+                  { element: { type: 'common' } },
+                  {
+                    element: {
+                      type: 'features',
+                      captured: { feature: '{{ from.element.captured.feature }}' },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              from: { element: { type: 'common' } },
+              allow: { to: { element: { type: 'common' } } },
+            },
           ],
         },
       ],

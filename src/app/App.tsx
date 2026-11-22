@@ -1,7 +1,13 @@
-import './App.css'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ExpensesDashboard } from '@/features/expenses'
+import '@/app/index.css'
 
-function App() {
-  return <div>HELLO, VITE!</div>
+const queryClient = new QueryClient()
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ExpensesDashboard />
+    </QueryClientProvider>
+  )
 }
-
-export default App
